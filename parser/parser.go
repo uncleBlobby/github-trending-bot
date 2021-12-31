@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/uncleBlobby/github_trending_bot/curler"
 )
 
 // interesting text we want to save seems to always start with "article class="Box-row"
@@ -88,7 +90,7 @@ func FindDailyTrendingURLS() {
 	}
 }
 
-func findProjectDescriptionsAndWriteToFile() {
+func FindProjectDirtyHTMLAndWriteToFile() {
 	currentTime := time.Now()
 	todaysDate := currentTime.Format("2006-01-02")
 	filename := todaysDate + "-barelinks"
@@ -100,7 +102,21 @@ func findProjectDescriptionsAndWriteToFile() {
 	}
 
 	defer bareLinks.Close()
-	scanner := bufio.NewScanner()
+	scanner := bufio.NewScanner(bareLinks)
+
+	//tempCounter := 0
+
+	for scanner.Scan() {
+		projectName := RemoveHTTPTAG(scanner.Text())
+		//fileIDString := string(tempCounter)
+		dirtyHTML := curler.GetHTMLFromURL(scanner.Text())
+
+		of, oferr := os.Create(projectName + "-dirtyhtml")
+		if oferr != nil {
+			log.Fatal(oferr)
+		}
+		of.WriteString(dirtyHTML)
+	}
 
 }
 
