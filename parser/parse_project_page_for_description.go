@@ -58,10 +58,11 @@ func removeHTML(s string) string {
 
 func RemoveHTTPTAG(s string) string {
 	if strings.Contains(s, "https://") {
-		s = strings.ReplaceAll(s, "https://", "")
+		s = strings.ReplaceAll(s, "https://github.com", "")
 	}
 	if strings.Contains(s, "/") {
 		s = strings.ReplaceAll(s, "/", "")
 	}
+
 	return s
 }

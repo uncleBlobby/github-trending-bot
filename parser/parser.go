@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/uncleBlobby/github_trending_bot/curler"
+	curler "github.com/uncleBlobby/github_trending_bot/curler"
 )
 
 // interesting text we want to save seems to always start with "article class="Box-row"
