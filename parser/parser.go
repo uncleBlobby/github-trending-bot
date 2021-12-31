@@ -90,7 +90,7 @@ func FindDailyTrendingURLS() {
 	}
 }
 
-func FindProjectDirtyHTMLAndWriteToFile() {
+func FindProjectDirtyHTMLAndWriteOutputFile() {
 	currentTime := time.Now()
 	todaysDate := currentTime.Format("2006-01-02")
 	filename := todaysDate + "-barelinks"
@@ -101,23 +101,73 @@ func FindProjectDirtyHTMLAndWriteToFile() {
 		log.Fatal(e)
 	}
 
-	defer bareLinks.Close()
+	outputFile, err := os.Create(todaysDate)
+	if err != nil {
+		log.Fatal(err)
+	}
+	outputFile.Close()
+
 	scanner := bufio.NewScanner(bareLinks)
 
 	//tempCounter := 0
 
 	for scanner.Scan() {
+		projectNameWITHTAG := scanner.Text()
 		projectName := RemoveHTTPTAG(scanner.Text())
 		//fileIDString := string(tempCounter)
 		dirtyHTML := curler.GetHTMLFromURL(scanner.Text())
-
-		of, oferr := os.Create(projectName + "-dirtyhtml")
+		thisFileName := projectName + "-dirtyhtml"
+		of, oferr := os.Create(thisFileName)
 		if oferr != nil {
 			log.Fatal(oferr)
 		}
 		of.WriteString(dirtyHTML)
+		of.Close()
+
+		projectDirtyHTML, err := os.Open(thisFileName)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		secondScanner := bufio.NewScanner(projectDirtyHTML)
+
+		for secondScanner.Scan() {
+			if strings.Contains(secondScanner.Text(), "<title>") {
+				f, err := os.OpenFile(todaysDate, os.O_APPEND|+os.O_CREATE|os.O_WRONLY, 0644)
+				if err != nil {
+					log.Fatal(err)
+				}
+				outputDescription := secondScanner.Text()
+				outputDescription = removeHTML(outputDescription)
+
+				WriteProjectDetails(f, projectNameWITHTAG, outputDescription)
+				/*
+					f.WriteString("Project: ")
+					f.WriteString(projectNameWITHTAG)
+					f.WriteString("\n")
+					f.WriteString("Description: ")
+					f.WriteString(outputDescription)
+					f.WriteString("\n")
+					f.WriteString("\n")
+					f.Close()
+				*/
+			}
+		}
+
+		projectDirtyHTML.Close()
+
+		err = os.Remove(projectDirtyHTML.Name())
+		if err != nil {
+			log.Fatal(err)
+		}
+
 	}
 
+	bareLinks.Close()
+	err = os.Remove(bareLinks.Name())
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func DeleteDirtyHTMLFile() {

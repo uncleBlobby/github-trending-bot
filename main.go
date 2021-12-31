@@ -23,6 +23,6 @@ func main() {
 	// 4. delete barelinks file
 
 	// step 1:
-	parser.FindProjectDirtyHTMLAndWriteToFile()
+	parser.FindProjectDirtyHTMLAndWriteOutputFile()
 
 }
