@@ -14,11 +14,11 @@ func FindDailyTrendingURLS() {
 	currentTime := time.Now()
 	todaysDate := currentTime.Format("2006-01-02")
 	// open the file
-	f, err := os.Open("results")
+	f, err := os.Open(todaysDate + "-dirtyhtml")
 	if err != nil {
 		log.Fatal(err)
 	}
-	of, oferr := os.Create(todaysDate)
+	of, oferr := os.Create(todaysDate + "-barelinks")
 	if oferr != nil {
 		log.Fatal(err)
 	}
@@ -85,5 +85,31 @@ func FindDailyTrendingURLS() {
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func findProjectDescriptionsAndWriteToFile() {
+	currentTime := time.Now()
+	todaysDate := currentTime.Format("2006-01-02")
+	filename := todaysDate + "-barelinks"
+	// open bare links file
+
+	bareLinks, e := os.Open(filename)
+	if e != nil {
+		log.Fatal(e)
+	}
+
+	defer bareLinks.Close()
+	scanner := bufio.NewScanner()
+
+}
+
+func DeleteDirtyHTMLFile() {
+	currentTime := time.Now()
+	todaysDate := currentTime.Format("2006-01-02")
+	filename := todaysDate + "-dirtyhtml"
+	e := os.Remove(filename)
+	if e != nil {
+		log.Fatal(e)
 	}
 }

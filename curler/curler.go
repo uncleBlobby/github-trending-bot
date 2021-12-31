@@ -23,7 +23,7 @@ func WriteHTMLToFile(html string) {
 	currentTime := time.Now()
 	todaysDate := currentTime.Format("2006-01-02")
 
-	of, oferr := os.Create(todaysDate)
+	of, oferr := os.Create(todaysDate + "-dirtyhtml")
 	if oferr != nil {
 		log.Fatal(oferr)
 	}
