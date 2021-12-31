@@ -17,11 +17,18 @@ Actually just a simple exercise used as an excuse to noodle around with the Go l
 
 ### Clone Repo
 
-```git clone uncleBlobby@github.com/github-trending-bot```
+1. [Install Go Language](https://go.dev/doc/install)
 
-### Run 
 
-```go run .```
+2. From a Linux Terminal:
+
+    ```git clone uncleBlobby@github.com/github-trending-bot```
+
+3. ### Run 
+
+    ```go run .```
+
+4. *Go* be productive doing something else.
 
 ---
 
