@@ -85,7 +85,7 @@ func FindProjectDirtyHTMLAndWriteOutputFile() {
 		log.Fatal(e)
 	}
 
-	outputFile, err := os.Create(todaysDate)
+	outputFile, err := os.Create("./archive/" + todaysDate)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -114,7 +114,7 @@ func FindProjectDirtyHTMLAndWriteOutputFile() {
 
 		for secondScanner.Scan() {
 			if strings.Contains(secondScanner.Text(), "<title>") {
-				f, err := os.OpenFile(todaysDate, os.O_APPEND|+os.O_CREATE|os.O_WRONLY, 0644)
+				f, err := os.OpenFile("./archive/"+todaysDate, os.O_APPEND|+os.O_CREATE|os.O_WRONLY, 0644)
 				if err != nil {
 					log.Fatal(err)
 				}
