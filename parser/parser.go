@@ -10,12 +10,9 @@ import (
 	curler "github.com/uncleBlobby/github_trending_bot/curler"
 )
 
-// interesting text we want to save seems to always start with "article class="Box-row"
-
 func FindDailyTrendingURLS() {
 	currentTime := time.Now()
 	todaysDate := currentTime.Format("2006-01-02")
-	// open the file
 	f, err := os.Open(todaysDate + "-dirtyhtml")
 	if err != nil {
 		log.Fatal(err)
@@ -24,16 +21,16 @@ func FindDailyTrendingURLS() {
 	if oferr != nil {
 		log.Fatal(err)
 	}
-	// remember to close the file at the end of the program
+
 	defer f.Close()
 	defer of.Close()
 
 	scanner := bufio.NewScanner(f)
 	lineNumber := 0
-	//interestingLineIDs := []int{}
+
 	interestingLineFound := false
 	chunkCounter := 0
-	//saveNextLineAsDescription := false
+
 	for scanner.Scan() {
 
 		// do something with a line
@@ -57,24 +54,11 @@ func FindDailyTrendingURLS() {
 				outputLine := strings.Fields(scanner.Text())
 				outputLine[1] = strings.ReplaceAll(outputLine[1], "href=\"", "https://github.com")
 				outputLine[1] = strings.ReplaceAll(outputLine[1], "stargazers\"", "")
-				//fmt.Printf("line:%d, %s\n", lineNumber, scanner.Text())
+
 				of.WriteString(outputLine[1])
 				of.WriteString("\n")
 				chunkCounter++
 			}
-			/*
-				if saveNextLineAsDescription {
-					outputLine := strings.Fields(scanner.Text())
-					fmt.Printf("desctipion: %v", outputLine[0])
-					//of.WriteString(outputDescription[0])
-					of.WriteString("\n")
-					saveNextLineAsDescription = false
-				}
-				if strings.Contains(scanner.Text(), "p class=\"col-9") {
-					saveNextLineAsDescription = true
-
-				}
-			*/
 
 		}
 		if chunkCounter >= 50 {
@@ -109,12 +93,9 @@ func FindProjectDirtyHTMLAndWriteOutputFile() {
 
 	scanner := bufio.NewScanner(bareLinks)
 
-	//tempCounter := 0
-
 	for scanner.Scan() {
 		projectNameWITHTAG := scanner.Text()
 		projectName := RemoveHTTPTAG(scanner.Text())
-		//fileIDString := string(tempCounter)
 		dirtyHTML := curler.GetHTMLFromURL(scanner.Text())
 		thisFileName := projectName + "-dirtyhtml"
 		of, oferr := os.Create(thisFileName)
@@ -141,16 +122,7 @@ func FindProjectDirtyHTMLAndWriteOutputFile() {
 				outputDescription = removeHTML(outputDescription)
 
 				WriteProjectDetails(f, projectNameWITHTAG, outputDescription)
-				/*
-					f.WriteString("Project: ")
-					f.WriteString(projectNameWITHTAG)
-					f.WriteString("\n")
-					f.WriteString("Description: ")
-					f.WriteString(outputDescription)
-					f.WriteString("\n")
-					f.WriteString("\n")
-					f.Close()
-				*/
+
 			}
 		}
 
