@@ -94,45 +94,47 @@ func FindProjectDirtyHTMLAndWriteOutputFile() {
 	scanner := bufio.NewScanner(bareLinks)
 
 	for scanner.Scan() {
-		projectNameWITHTAG := scanner.Text()
-		projectName := RemoveHTTPTAG(scanner.Text())
-		dirtyHTML := curler.GetHTMLFromURL(scanner.Text())
-		thisFileName := projectName + "-dirtyhtml"
-		of, oferr := os.Create(thisFileName)
-		if oferr != nil {
-			log.Fatal(oferr)
-		}
-		of.WriteString(dirtyHTML)
-		of.Close()
+		if strings.Contains(scanner.Text(), "https:") {
 
-		projectDirtyHTML, err := os.Open(thisFileName)
-		if err != nil {
-			log.Fatal(err)
-		}
+			projectNameWITHTAG := scanner.Text()
+			projectName := RemoveHTTPTAG(scanner.Text())
+			dirtyHTML := curler.GetHTMLFromURL(scanner.Text())
+			thisFileName := projectName + "-dirtyhtml"
+			of, oferr := os.Create(thisFileName)
+			if oferr != nil {
+				log.Fatal(oferr)
+			}
+			of.WriteString(dirtyHTML)
+			of.Close()
 
-		secondScanner := bufio.NewScanner(projectDirtyHTML)
+			projectDirtyHTML, err := os.Open(thisFileName)
+			if err != nil {
+				log.Fatal(err)
+			}
 
-		for secondScanner.Scan() {
-			if strings.Contains(secondScanner.Text(), "<title>") {
-				f, err := os.OpenFile("./archive/"+todaysDate, os.O_APPEND|+os.O_CREATE|os.O_WRONLY, 0644)
-				if err != nil {
-					log.Fatal(err)
+			secondScanner := bufio.NewScanner(projectDirtyHTML)
+
+			for secondScanner.Scan() {
+				if strings.Contains(secondScanner.Text(), "<title>") {
+					f, err := os.OpenFile("./archive/"+todaysDate, os.O_APPEND|+os.O_CREATE|os.O_WRONLY, 0644)
+					if err != nil {
+						log.Fatal(err)
+					}
+					outputDescription := secondScanner.Text()
+					outputDescription = removeHTML(outputDescription)
+
+					WriteProjectDetails(f, projectNameWITHTAG, outputDescription)
+
 				}
-				outputDescription := secondScanner.Text()
-				outputDescription = removeHTML(outputDescription)
+			}
 
-				WriteProjectDetails(f, projectNameWITHTAG, outputDescription)
+			projectDirtyHTML.Close()
 
+			err = os.Remove(projectDirtyHTML.Name())
+			if err != nil {
+				log.Fatal(err)
 			}
 		}
-
-		projectDirtyHTML.Close()
-
-		err = os.Remove(projectDirtyHTML.Name())
-		if err != nil {
-			log.Fatal(err)
-		}
-
 	}
 
 	bareLinks.Close()

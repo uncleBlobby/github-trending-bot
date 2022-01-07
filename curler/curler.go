@@ -10,8 +10,10 @@ import (
 
 func GetHTMLFromURL(url string) string {
 	req, _ := http.NewRequest("GET", url, nil)
-	res, _ := http.DefaultClient.Do(req)
-
+	res, reserr := http.DefaultClient.Do(req)
+	if reserr != nil {
+		log.Fatal(reserr)
+	}
 	defer res.Body.Close()
 
 	body, _ := ioutil.ReadAll(res.Body)
