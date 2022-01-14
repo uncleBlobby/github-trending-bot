@@ -85,7 +85,16 @@ func FindProjectDirtyHTMLAndWriteOutputFile() {
 		log.Fatal(e)
 	}
 
-	outputFile, err := os.Create("./archive/" + todaysDate)
+	// If archive directory doesn't yet exist, we must create it! -- Jan 13 2022
+
+	outputPath := "./archive/"
+
+	err := os.MkdirAll(outputPath, os.ModePerm)
+	if err != nil {
+		log.Println(err)
+	}
+
+	outputFile, err := os.Create(outputPath + todaysDate)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -116,7 +125,7 @@ func FindProjectDirtyHTMLAndWriteOutputFile() {
 
 			for secondScanner.Scan() {
 				if strings.Contains(secondScanner.Text(), "<title>") {
-					f, err := os.OpenFile("./archive/"+todaysDate, os.O_APPEND|+os.O_CREATE|os.O_WRONLY, 0644)
+					f, err := os.OpenFile(outputPath+todaysDate, os.O_APPEND|+os.O_CREATE|os.O_WRONLY, 0644)
 					if err != nil {
 						log.Fatal(err)
 					}
